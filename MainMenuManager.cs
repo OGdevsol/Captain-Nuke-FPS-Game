@@ -24,22 +24,47 @@ public class MainMenuManager : MonoBehaviour
 	private void Awake()
 	{
 		button = gameObject.GetComponent<Button>();
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
 	}
 
 	void Start()
 	{
-		for (int i = 3; i < levelsButtons.Count; i++)
+		LevelsLock_Unlock();
+	}
+
+	public void LevelsLock_Unlock()
+	{
+		Debug.LogError(PlayerPrefs.GetInt("Unlockable"));
+		for (var i = 0; i <= PlayerPrefs.GetInt("Unlockable"); i++)
 		{
-			levelsButtons[i].interactable = false;
-			levelsButtons[i].gameObject.transform.GetChild(2).gameObject.SetActive(true);
-			levelsButtons[i].gameObject.transform.GetChild(3).gameObject.SetActive(true);
+			levelsButtons[i].interactable = true;
+			levelsButtons[i].gameObject.transform.GetChild(2).gameObject.SetActive(false);
+			levelsButtons[i].gameObject.transform.GetChild(3).gameObject.SetActive(false);
 		}
 	}
 
 	public void EnableReferencePanel(int panelID)
 	{
+		SoundController.instance.playFromPool(AudioType.UIclick);
 		DisableAllPanels();
 		ReferencePanels[panelID].SetActive(true);
+	}
+
+	public void CAMPAIGNMODE()
+	{
+		PlayerPrefs.SetString("Mode", "Campaign");
+		EnableReferencePanel(2);
+		//	SoundController.instance.playFromPool(AudioType.UIclick1);
+	}
+
+	public void SHOOTOUTMODE()
+	{
+		PlayerPrefs.SetString("Mode", "Shootout");
+		SoundController.instance.playFromPool(AudioType.UIclick2);
+		Debug.LogError(PlayerPrefs.GetString("Mode"));
+		StartCoroutine(LoadLevel());
+		SceneManager.LoadScene("Cargo2");
 	}
 
 	public void DisableAllPanels()
@@ -73,18 +98,35 @@ public class MainMenuManager : MonoBehaviour
 
 	public IEnumerator LoadLevel()
 	{
-		loadingPanel.SetActive(true);
-		yield return new WaitForSeconds(2f);
-
-		switch (map)
+		SoundController.instance.playFromPool(AudioType.UIclick2);
+		if (PlayerPrefs.GetString("Mode") == "Campaign")
 		{
-			case mapType.Cargo:
-				Debug.Log("No Functionality for current level");
-				break;
-			case mapType.Subway:
-				SceneManager.LoadScene("Subway");
-				break;
+			loadingPanel.SetActive(true);
+			yield return new WaitForSeconds(2f);
+
+			switch (map)
+			{
+				case mapType.Cargo:
+					SceneManager.LoadScene("Cargo2");
+					break;
+				case mapType.Subway:
+					SceneManager.LoadScene("Subway");
+					break;
+			}
 		}
+
+		if (PlayerPrefs.GetString("Mode") == "Shootout")
+		{
+			loadingPanel.SetActive(true);
+			yield return new WaitForSeconds(2f);
+			SceneManager.LoadScene("Cargo2");
+			Debug.LogError("SceneLoaded");
+		}
+	}
+
+	public void QUIT()
+	{
+		Application.Quit();
 	}
 
 	private enum mapType

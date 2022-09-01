@@ -77,13 +77,20 @@ public class MutantHealthScript : MonoBehaviour
 		isDead = true;
 
 
-		x = LSM.level[0]
+		x = LSM.level[PlayerPrefs.GetInt("SelectedLevel")]
 			.wavesInLevel[Level_Spawn_Manager.instance._currentWaveToKeepActiveIndex].enemiesGameObjectInWave
 			.IndexOf(gameObject.transform);
 
-		LSM.level[0]
+		LSM.level[PlayerPrefs.GetInt("SelectedLevel")]
 			.wavesInLevel[Level_Spawn_Manager.instance._currentWaveToKeepActiveIndex].enemiesGameObjectInWave
 			.RemoveAt(x);
 		LSM.CheckEnemiesInActiveWave();
+		StartCoroutine(destroyGameObject());
+	}
+
+	private IEnumerator destroyGameObject()
+	{
+		yield return new WaitForSecondsRealtime(3);
+		Destroy(gameObject);
 	}
 }

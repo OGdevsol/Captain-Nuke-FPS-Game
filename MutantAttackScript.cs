@@ -21,6 +21,7 @@ public class MutantAttackScript : MonoBehaviour
 		if (!mutantHealthScript.isDead)
 		{
 			Instantiate(projectile, leftAttackarmTransform.transform.position, transform.rotation);
+			SoundController.instance.playFromPool(AudioType.PeojectileWhoosh);
 		}
 	}
 
@@ -29,6 +30,8 @@ public class MutantAttackScript : MonoBehaviour
 		if (!mutantHealthScript.isDead)
 		{
 			Instantiate(projectile, rightAttackarmTransform.transform.position, transform.rotation);
+			SoundController.instance.playFromPool(AudioType.PeojectileWhoosh);
+
 		}
 	}
 }
